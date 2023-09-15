@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "defines.hpp"
+#include "common_types.hpp"
 #include "config.hpp"
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"
@@ -56,33 +57,9 @@ void get_params(const HttpRequestPtr& request, Callback&& callback)
 	std::cout << "get_params request!" << std::endl;
 	//
 	Json::Value ret;
-	//
 	ConfigData buf = *config_sm_ptr;
 	//
-	ret["01_CAM_ADDR_1"] = buf.CAM_ADDR_1;
-	ret["02_CAM_ADDR_2"] = buf.CAM_ADDR_2;
-	//
-	ret["03_UDP_ADDR"] = buf.UDP_ADDR;
-	ret["04_UDP_PORT"] = buf.UDP_PORT;
-	//
-	ret["05_NUM_ROI"] = buf.NUM_ROI;
-	ret["06_NUM_ROI_H"] = buf.NUM_ROI_H;
-	ret["07_NUM_ROI_V"] = buf.NUM_ROI_V;
-	//
-	ret["08_SHOW_GRAY"] = buf.SHOW_GRAY;
-	ret["09_DRAW_DETAILED"] = buf.DRAW_DETAILED;
-	ret["10_DRAW_GRID"] = buf.DRAW_GRID;
-	ret["11_DRAW"] = buf.DRAW;
-	//
-	ret["12_MIN_CONT_LEN"] = buf.MIN_CONT_LEN;
-	ret["13_HOR_COLLAPSE"] = buf.HOR_COLLAPSE;
-	//
-	ret["14_GAUSSIAN_BLUR_KERNEL"] = buf.GAUSSIAN_BLUR_KERNEL;
-	ret["15_MORPH_OPEN_KERNEL"] = buf.MORPH_OPEN_KERNEL;
-	ret["16_MORPH_CLOSE_KERNEL"] = buf.MORPH_CLOSE_KERNEL;
-	//
-	ret["17_THRESHOLD_THRESH"] = buf.THRESHOLD_THRESH;
-	ret["18_THRESHOLD_MAXVAL"] = buf.THRESHOLD_MAXVAL;
+	fill_json_form_config(buf, ret);
 	//
 	HttpResponsePtr resp = HttpResponse::newHttpResponse();
 	fillJsonResponse(ret, resp);
@@ -101,35 +78,8 @@ void apply_params(const HttpRequestPtr &request, Callback &&callback)
 	if(jsonParse(request->body(), v, err)) {
 		try {
 			read_config_sm(buf);
-
-			str = v["CAM_ADDR_1"].asString();
-			strcpy(buf.CAM_ADDR_1, str.c_str());
-			str = v["CAM_ADDR_2"].asString();
-			strcpy(buf.CAM_ADDR_2, str.c_str());
 			//
-			str = v["UDP_ADDR"].asString();
-			strcpy(buf.UDP_ADDR, str.c_str());
-			buf.UDP_PORT = stoi(v["UDP_PORT"].asString());
-			//
-			buf.NUM_ROI = stoi(v["NUM_ROI"].asString());
-			buf.NUM_ROI_H = stoi(v["NUM_ROI_H"].asString());
-			buf.NUM_ROI_V = stoi(v["NUM_ROI_V"].asString());
-			//buf.recount_data_size();
-			//
-			buf.SHOW_GRAY = stoi(v["SHOW_GRAY"].asString());
-			buf.DRAW_DETAILED = stoi(v["DRAW_DETAILED"].asString());
-			buf.DRAW_GRID = stoi(v["DRAW_GRID"].asString());
-			buf.DRAW = stoi(v["DRAW"].asString());
-			//
-			buf.MIN_CONT_LEN = stoi(v["MIN_CONT_LEN"].asString());
-			buf.HOR_COLLAPSE = stoi(v["HOR_COLLAPSE"].asString());
-			//
-			buf.GAUSSIAN_BLUR_KERNEL = stoi(v["GAUSSIAN_BLUR_KERNEL"].asString());
-			buf.MORPH_OPEN_KERNEL = stoi(v["MORPH_OPEN_KERNEL"].asString());
-			buf.MORPH_CLOSE_KERNEL = stoi(v["MORPH_CLOSE_KERNEL"].asString());
-			//
-			buf.THRESHOLD_THRESH = stoi(v["THRESHOLD_THRESH"].asString());
-			buf.THRESHOLD_MAXVAL = stoi(v["THRESHOLD_MAXVAL"].asString());
+			fill_config_form_json(v, buf);
 			//
 			write_config_sm(buf);
 		} catch (...) {
@@ -175,12 +125,39 @@ void save_params(const HttpRequestPtr &request, Callback &&callback)
 	callback(resp);
 }
 
+void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
+{
+	aJS.clear();
+	aJS["width"] = parse_result.img_width;
+	aJS["height"] = parse_result.img_height;
+	aJS["fl_error"] = parse_result.error_flag;
+	//
+	Json::Value res_pt, res_pts;
+	for (size_t i = 0; i < parse_result.points_count; i++) {
+		res_pt["x"] = parse_result.points[i].x;
+		res_pt["y"] = parse_result.points[i].y;
+		res_pts.append(res_pt);
+	}
+	aJS["res_points"] = res_pts;
+	//
+	Json::Value hor_ys;
+	for (size_t i = 0; i < parse_result.hor_count; i++)
+		hor_ys.append(parse_result.points_hor[i]);
+	aJS["hor_ys"] = hor_ys;
+}
+
 void get_points(const HttpRequestPtr &request, Callback &&callback)
 {
 	//std::cout << "get_points request!" << std::endl;
 	//
 	Json::Value root;
 	Json::Value child;
+	ResultFixed rfx;
+	for (int i = 0; i < CAM_COUNT; i++) {
+		read_results_sm(rfx, i);
+		fillParseResultJson(child, rfx);
+		root["result"].append(child);
+	}
 	//
 	HttpResponsePtr resp = HttpResponse::newHttpResponse();
 	fillJsonResponse(root, resp);
