@@ -34,6 +34,8 @@ int main(int argc, char** argv)
 	signal(SIGTERM, signalHandler);
 	signal(SIGSTOP, signalHandler);
 
+	read_config();
+	//
 	init_shared_memory();
 	//
 	cout << "config_sm_id = " << config_sm_id << endl;
