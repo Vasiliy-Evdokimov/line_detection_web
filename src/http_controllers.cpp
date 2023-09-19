@@ -164,6 +164,28 @@ void get_points(const HttpRequestPtr &request, Callback &&callback)
 	callback(resp);
 }
 
+void get_config_map(const HttpRequestPtr &request, Callback &&callback)
+{
+	//std::cout << "get_config_map request!" << std::endl;
+	//
+	Json::Value root;
+	Json::Value child;
+	string nm;
+	for (const auto& element : config_map) {
+		nm = element.first;
+		ConfigItem ci = config_map[nm];
+		Json::Value child;
+		child["name"] = nm;
+		child["type"] = (int)ci.type;
+		child["descr"] = ci.description;
+		root["result"].append(child);
+	}
+	//
+	HttpResponsePtr resp = HttpResponse::newHttpResponse();
+	fillJsonResponse(root, resp);
+	callback(resp);
+}
+
 void http_init()
 {
 	std::cout << "html_document_root = " << html_document_root << std::endl;
@@ -179,6 +201,7 @@ void http_init()
 	drogon::app().registerHandler("/apply_params", &apply_params, { Get, Post, Options });
 	drogon::app().registerHandler("/save_params", &save_params, { Get, Post, Options });
 	drogon::app().registerHandler("/get_points", &get_points, { Get, Post, Options });
+	drogon::app().registerHandler("/get_config_map", &get_config_map, { Get, Post, Options });
 	//
 	drogon::app().run();
 
