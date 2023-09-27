@@ -144,6 +144,9 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	for (size_t i = 0; i < parse_result.hor_count; i++)
 		hor_ys.append(parse_result.points_hor[i]);
 	aJS["hor_ys"] = hor_ys;
+	//
+	aJS["zone_flags"] = parse_result.zone_flags;
+	aJS["stop_distance"] = parse_result.stop_distance;
 }
 
 void get_points(const HttpRequestPtr &request, Callback &&callback)
