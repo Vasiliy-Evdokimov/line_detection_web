@@ -130,7 +130,7 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	aJS.clear();
 	aJS["width"] = parse_result.img_width;
 	aJS["height"] = parse_result.img_height;
-	aJS["fl_error"] = parse_result.error_flag;
+	aJS["error_flags"] = parse_result.error_flags;
 	//
 	Json::Value res_pt, res_pts;
 	for (size_t i = 0; i < parse_result.points_count; i++) {
