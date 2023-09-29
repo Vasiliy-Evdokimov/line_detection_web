@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <drogon/drogon.h>
 
 #include <stdio.h>
@@ -9,6 +7,7 @@
 #include "defines.hpp"
 #include "common_types.hpp"
 #include "config.hpp"
+#include "log.hpp"
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"
 
@@ -54,7 +53,7 @@ void fillJsonResponse(Json::Value& ret, HttpResponsePtr& resp)
 
 void get_params(const HttpRequestPtr& request, Callback&& callback)
 {
-	std::cout << "get_params request!" << std::endl;
+	write_log("get_params request!");
 	//
 	Json::Value ret;
 	ConfigData buf = *config_sm_ptr;
@@ -68,7 +67,7 @@ void get_params(const HttpRequestPtr& request, Callback&& callback)
 
 void apply_params(const HttpRequestPtr &request, Callback &&callback)
 {
-	std::cout << "apply_params request!" << std::endl;
+	write_log("apply_params request!");
 	//
 	ConfigData buf;
 	//
@@ -84,10 +83,10 @@ void apply_params(const HttpRequestPtr &request, Callback &&callback)
 			write_config_sm(buf);
 		} catch (...) {
 			err = "apply params failed!";
-			cout << err << endl;
+			write_log(err);
 		}
 	} else
-		cout << "jsonParse failed! " << err << endl;
+		write_log("jsonParse failed! " + err);
 	//
 	kill(config_sm_ptr->PID, SIGUSR1);
 	//
@@ -104,7 +103,7 @@ void apply_params(const HttpRequestPtr &request, Callback &&callback)
 
 void save_params(const HttpRequestPtr &request, Callback &&callback)
 {
-	std::cout << "save_params request!" << std::endl;
+	write_log("save_params request!");
 	//
 	Json::Value ret;
 	string err;
@@ -113,7 +112,7 @@ void save_params(const HttpRequestPtr &request, Callback &&callback)
 		save_config(buf);
 	} catch (...) {
 		err = "save params failed!";
-		cout << err << endl;
+		write_log(err);
 	}
 	if (err == "")
 		ret["message"] = "ok";
@@ -151,7 +150,7 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 
 void get_points(const HttpRequestPtr &request, Callback &&callback)
 {
-	//std::cout << "get_points request!" << std::endl;
+	//write_log("get_points request!");
 	//
 	Json::Value root;
 	Json::Value child;
@@ -169,7 +168,7 @@ void get_points(const HttpRequestPtr &request, Callback &&callback)
 
 void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 {
-	//std::cout << "get_config_map request!" << std::endl;
+	//write_log("get_config_map request!");
 	//
 	Json::Value root;
 	Json::Value child;
@@ -191,7 +190,7 @@ void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 
 void http_init()
 {
-	std::cout << "html_document_root = " << html_document_root << std::endl;
+	write_log("html_document_root = " + html_document_root);
 
 	drogon::app()
 		.setLogLevel(trantor::Logger::LogLevel::kFatal)

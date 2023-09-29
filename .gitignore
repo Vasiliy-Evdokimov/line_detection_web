@@ -18,3 +18,7 @@ Debug/src/shared_memory.o
 Debug/src/subdir.mk
 
 Debug/line_detection_web
+
+*.d
+
+*.o

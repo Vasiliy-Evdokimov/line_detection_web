@@ -31,6 +31,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/line_detection/src/config.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/log.cpp</name>
+			<type>1</type>
+			<location>/home/vevdokimov/eclipse-workspace/line_detection/src/log.cpp</location>
+		</link>
+		<link>
 			<name>src/shared_memory.cpp</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/line_detection/src/shared_memory.cpp</locationURI>
