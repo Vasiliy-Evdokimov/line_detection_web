@@ -132,7 +132,7 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	aJS["error_flags"] = parse_result.error_flags;
 	//
 	Json::Value res_pt, res_pts;
-	for (size_t i = 0; i < parse_result.points_count; i++) {
+	for (int16_t i = 0; i < parse_result.points_count; i++) {
 		res_pt["x"] = parse_result.points[i].x;
 		res_pt["y"] = parse_result.points[i].y;
 		res_pts.append(res_pt);
@@ -140,7 +140,7 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	aJS["res_points"] = res_pts;
 	//
 	Json::Value hor_ys;
-	for (size_t i = 0; i < parse_result.hor_count; i++)
+	for (int16_t i = 0; i < parse_result.hor_count; i++)
 		hor_ys.append(parse_result.points_hor[i]);
 	aJS["hor_ys"] = hor_ys;
 	//
