@@ -8,6 +8,8 @@
 #ifndef HTTP_CONTROLLERS_HPP_
 #define HTTP_CONTROLLERS_HPP_
 
+void read_config_for_web();
+
 void http_init();
 
 void http_quit();

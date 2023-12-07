@@ -2,7 +2,6 @@
 #include <unistd.h>
 
 #include "log.hpp"
-#include "config.hpp"
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"
 
@@ -22,7 +21,7 @@ int main(int argc, char** argv)
 	signal(SIGTERM, signalHandler);
 	signal(SIGSTOP, signalHandler);
 
-	read_config();
+	read_config_for_web();
 	//
 	init_shared_memory();
 	//

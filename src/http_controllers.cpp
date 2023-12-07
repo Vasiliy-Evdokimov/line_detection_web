@@ -17,6 +17,18 @@ using namespace drogon;
 
 typedef std::function<void(const HttpResponsePtr &)> Callback;
 
+const string main_config_path =
+	"/home/vevdokimov/eclipse-workspace/line_detection/config/" + config_filename;
+
+void read_config_for_web()
+{
+	read_config(
+		#ifndef RELEASE
+			main_config_path
+		#endif
+	);
+}
+
 bool jsonParse(std::string_view str, Json::Value& val, std::string& err)
 {
   Json::CharReaderBuilder builder;
@@ -102,7 +114,12 @@ void save_params(const HttpRequestPtr &request, Callback &&callback)
 	string err;
 	try {
 		ConfigData buf = *config_sm_ptr;
-		save_config(buf);
+		save_config(
+			buf
+			#ifndef RELEASE
+				, main_config_path
+			#endif
+		);
 	} catch (...) {
 		err = "save params failed!";
 		write_log(err);
