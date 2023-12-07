@@ -17,13 +17,6 @@ using namespace drogon;
 
 typedef std::function<void(const HttpResponsePtr &)> Callback;
 
-const string html_document_root =
-	#ifndef RELEASE
-		"/home/vevdokimov/eclipse-workspace/line_detection/html";
-	#else
-		"/home/user/line_detection/html";
-	#endif
-
 bool jsonParse(std::string_view str, Json::Value& val, std::string& err)
 {
   Json::CharReaderBuilder builder;
@@ -190,6 +183,8 @@ void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 
 void http_init()
 {
+	string html_document_root = get_work_directory() + "html";
+
 	write_log("html_document_root = " + html_document_root);
 
 	drogon::app()
