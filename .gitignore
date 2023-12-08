@@ -22,3 +22,9 @@ Debug/line_detection_web
 *.d
 
 *.o
+
+.settings/org.eclipse.cdt.codan.core.prefs
+
+.settings/org.eclipse.cdt.core.prefs
+
+.cproject
