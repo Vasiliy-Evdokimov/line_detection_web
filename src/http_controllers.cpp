@@ -7,6 +7,7 @@
 #include "defines.hpp"
 #include "common_types.hpp"
 #include "config.hpp"
+#include "config_path.hpp"
 #include "log.hpp"
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"

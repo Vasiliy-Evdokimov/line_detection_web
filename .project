@@ -28,17 +28,22 @@
 		<link>
 			<name>src/config.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/line_detection/src/config.cpp</locationURI>
+			<locationURI>WORKSPACE_LOC/line_detection/src/config.cpp</locationURI>
+		</link>
+		<link>
+			<name>src/config_path.cpp</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/line_detection/src/config_path.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/log.cpp</name>
 			<type>1</type>
-			<location>/home/vevdokimov/eclipse-workspace/line_detection/src/log.cpp</location>
+			<locationURI>WORKSPACE_LOC/line_detection/src/log.cpp</locationURI>
 		</link>
 		<link>
 			<name>src/shared_memory.cpp</name>
 			<type>1</type>
-			<locationURI>PARENT-1-PROJECT_LOC/line_detection/src/shared_memory.cpp</locationURI>
+			<locationURI>WORKSPACE_LOC/line_detection/src/shared_memory.cpp</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
