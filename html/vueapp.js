@@ -149,6 +149,11 @@ var app = new Vue({
                 false
             );
         },
+        topleft(imgW, imgH, pt)
+        {
+            let cnt = { x: imgW / 2, y: imgH / 2 };
+            return { x: pt.x + cnt.x, y: cnt.y - pt.y };
+        },
         get_points_callback: function(data) {
             let ctx = this.draw_context;
             //
@@ -194,25 +199,62 @@ var app = new Vue({
                     }
                 } else {
                     ctx.lineWidth = 3;                    
-                    if (res.res_points) {
-                        ctx.strokeStyle = "green";
-                        let res_point;
-                        ctx.beginPath();
-                        ctx.moveTo((width / 2) + offset, height);                    
-                        for (res_point of res.res_points)
-                            ctx.lineTo(res_point.x + offset, res_point.y);
-                        ctx.stroke();
-                    }                        
-                    //
-                    if (res.hor_ys) {
-                        ctx.strokeStyle = "red";
-                        let hor_y;
-                        for (hor_y of res.hor_ys)
+                    if (res.res_points) 
+                    {
+                        prev_pt = { x: (width / 2) + offset, y: height };
+                        var j;
+                        for (j = 0; j < res.res_points.length; j++) 
                         {
+                            res_point = res.res_points[j];
+                            res_point_mm = res.res_points_mm[j]
+                            //
+                            ctx.strokeStyle = "green";
+                            ctx.fillStyle = "green";
                             ctx.beginPath();
-                            ctx.moveTo(offset, hor_y);
-                            ctx.lineTo(width + offset, hor_y);
+                            ctx.moveTo(prev_pt.x, prev_pt.y);                                 
+                            draw_pt = this.topleft(width, height, res_point);
+                            draw_pt.x += offset;
+                            ctx.lineTo(draw_pt.x, draw_pt.y);
+                            ctx.closePath();
                             ctx.stroke();
+                            ctx.fill();
+                            //
+                            this.draw_point_text(draw_pt.x + 10, draw_pt.y, "yellow", "(" + res_point.x + ";" + res_point.y + ") px");
+                            this.draw_point_text(draw_pt.x + 10, draw_pt.y + 15, "yellow", "(" + res_point_mm.x + ";" + res_point_mm.y + ") mm");
+                            //
+                            prev_pt.x = draw_pt.x;
+                            prev_pt.y = draw_pt.y;
+                            //
+                            this.draw_point_arc(draw_pt, "yellow");
+                        }                         
+                    }     
+                    //
+                    if (res.center_x) {
+                        draw_pt = this.topleft(width, height, { x: res.center_x, y: 0 });
+                        draw_pt.x += offset;
+                        this.draw_point_arc(draw_pt, "magenta");
+                        this.draw_point_text(draw_pt.x + 10, draw_pt.y, "magenta", res.center_x + " px");
+                        this.draw_point_text(draw_pt.x + 10, draw_pt.y + 15, "magenta", res.center_x_mm + " mm");
+                    }
+                    //
+                    if (res.hor_ys) 
+                    {                        
+                        var j;
+                        for (j = 0; j < res.hor_ys.length; j++) 
+                        {
+                            hor_y = res.hor_ys[j];
+                            hor_y_mm = res.hor_ys_mm[j];
+                            //                            
+                            ctx.strokeStyle = "red";
+                            draw_pt = this.topleft(width, height, { x: 0, y: hor_y });				            
+                            ctx.beginPath();
+                            ctx.moveTo(offset, draw_pt.y);
+                            ctx.lineTo(width + offset, draw_pt.y);
+                            ctx.closePath();
+                            ctx.stroke();
+                            //
+                            this.draw_point_text(10 + offset, draw_pt.y + 15, "red", hor_y + " px");
+                            this.draw_point_text(10 + offset, draw_pt.y + 30, "red", hor_y_mm + " mm");
                         }
                     }                        
                 }
@@ -235,6 +277,23 @@ var app = new Vue({
                 offset = width;
 
             }            
+        },
+        draw_point_arc: function(aPoint, aColor) {            
+            let ctx = this.draw_context;
+            ctx.strokeStyle = aColor;
+            ctx.fillStyle = aColor;
+            ctx.beginPath();                                            
+            ctx.arc(aPoint.x, aPoint.y, 2, 0, this.get_radians(360));
+            ctx.closePath();
+            ctx.stroke();
+            ctx.fill();
+        },
+        draw_point_text: function(aX, aY, aColor, aText) {
+            let ctx = this.draw_context;                   
+            ctx.fillStyle = aColor;
+            ctx.strokeStyle = ctx.fillStyle;
+            ctx.font = "10pt Arial";
+            ctx.fillText(aText, aX, aY);
         },
         draw_flag_arc: function(aX, aColor) {
             let ctx = this.draw_context;
