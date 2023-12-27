@@ -130,29 +130,24 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	aJS["height"] = parse_result.img_height;
 	aJS["error_flags"] = parse_result.error_flags;
 	//
-	Json::Value res_pt, res_pt_mm, res_pts, res_pts_mm;
-	for (int16_t i = 0; i < parse_result.points_count; i++) {
+	Json::Value res_pt, res_pts;
+	for (int16_t i = 0; i < parse_result.points_count; i++)
+	{
 		res_pt["x"] = parse_result.points[i].x;
 		res_pt["y"] = parse_result.points[i].y;
 		res_pts.append(res_pt);
-		//
-		res_pt_mm["x"] = parse_result.points_mm[i].x;
-		res_pt_mm["y"] = parse_result.points_mm[i].y;
-		res_pts_mm.append(res_pt_mm);
 	}
 	aJS["res_points"] = res_pts;
-	aJS["res_points_mm"] = res_pts_mm;
 	//
 	aJS["center_x"] = parse_result.center_x;
 	aJS["center_x_mm"] = parse_result.center_x_mm;
 	//
-	Json::Value hor_ys, hor_ys_mm;
-	for (int16_t i = 0; i < parse_result.hor_count; i++) {
+	Json::Value hor_ys;
+	for (int16_t i = 0; i < parse_result.hor_count; i++)
+	{
 		hor_ys.append(parse_result.points_hor[i]);
-		hor_ys_mm.append(parse_result.points_hor_mm[i]);
 	}
 	aJS["hor_ys"] = hor_ys;
-	aJS["hor_ys_mm"] = hor_ys_mm;
 	//
 	aJS["zone_flags"] = parse_result.zone_flags;
 	aJS["stop_distance"] = parse_result.stop_distance;

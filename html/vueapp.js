@@ -14,7 +14,7 @@ var app = new Vue({
         draw_interval: null,
         //
         web_show_lines: false,
-        web_interval: 50,
+        web_interval: 100,
         //
         params_descriptions: new Map()
     },
@@ -205,8 +205,7 @@ var app = new Vue({
                         var j;
                         for (j = 0; j < res.res_points.length; j++) 
                         {
-                            res_point = res.res_points[j];
-                            res_point_mm = res.res_points_mm[j]
+                            res_point = res.res_points[j];                        
                             //
                             ctx.strokeStyle = "green";
                             ctx.fillStyle = "green";
@@ -219,8 +218,7 @@ var app = new Vue({
                             ctx.stroke();
                             ctx.fill();
                             //
-                            this.draw_point_text(draw_pt.x + 10, draw_pt.y, "yellow", "(" + res_point.x + ";" + res_point.y + ") px");
-                            this.draw_point_text(draw_pt.x + 10, draw_pt.y + 15, "yellow", "(" + res_point_mm.x + ";" + res_point_mm.y + ") mm");
+                            this.draw_point_text(draw_pt.x + 10, draw_pt.y, "yellow", "(" + res_point.x + ";" + res_point.y + ") px");                            
                             //
                             prev_pt.x = draw_pt.x;
                             prev_pt.y = draw_pt.y;
@@ -242,8 +240,7 @@ var app = new Vue({
                         var j;
                         for (j = 0; j < res.hor_ys.length; j++) 
                         {
-                            hor_y = res.hor_ys[j];
-                            hor_y_mm = res.hor_ys_mm[j];
+                            hor_y = res.hor_ys[j];                            
                             //                            
                             ctx.strokeStyle = "red";
                             draw_pt = this.topleft(width, height, { x: 0, y: hor_y });				            
@@ -253,8 +250,7 @@ var app = new Vue({
                             ctx.closePath();
                             ctx.stroke();
                             //
-                            this.draw_point_text(10 + offset, draw_pt.y + 15, "red", hor_y + " px");
-                            this.draw_point_text(10 + offset, draw_pt.y + 30, "red", hor_y_mm + " mm");
+                            this.draw_point_text(10 + offset, draw_pt.y + 15, "red", hor_y + " px");                            
                         }
                     }                        
                 }
