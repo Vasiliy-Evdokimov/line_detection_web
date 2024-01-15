@@ -41,6 +41,11 @@
 			<locationURI>WORKSPACE_LOC/line_detection/src/log.cpp</locationURI>
 		</link>
 		<link>
+			<name>src/service.cpp</name>
+			<type>1</type>
+			<locationURI>WORKSPACE_LOC/line_detection/src/service.cpp</locationURI>
+		</link>
+		<link>
 			<name>src/shared_memory.cpp</name>
 			<type>1</type>
 			<locationURI>WORKSPACE_LOC/line_detection/src/shared_memory.cpp</locationURI>

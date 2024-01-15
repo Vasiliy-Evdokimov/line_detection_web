@@ -173,7 +173,7 @@ void get_points(const HttpRequestPtr &request, Callback &&callback)
 
 void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 {
-	//write_log("get_config_map request!");
+	write_log("get_config_map request!");
 	//
 	Json::Value root;
 	Json::Value child;
@@ -196,15 +196,14 @@ void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 void http_init()
 {
 	string html_document_root = get_work_directory() + "html";
-
+	//
 	write_log("html_document_root = " + html_document_root);
-
-	drogon::app()
-		.setLogLevel(trantor::Logger::LogLevel::kFatal)
-		.setThreadNum(1)
-		.enableServerHeader(false)
-		.setDocumentRoot(html_document_root)
-		.addListener("0.0.0.0", 8000);
+	//
+	drogon::app().setLogLevel(trantor::Logger::LogLevel::kFatal);
+	drogon::app().setThreadNum(1);
+	drogon::app().enableServerHeader(false);
+	drogon::app().setDocumentRoot(html_document_root);
+	drogon::app().addListener("0.0.0.0", 8000);
 	//
 	drogon::app().registerHandler("/get_params", &get_params, { Get, Post, Options });
 	drogon::app().registerHandler("/apply_params", &apply_params, { Get, Post, Options });
@@ -213,13 +212,10 @@ void http_init()
 	drogon::app().registerHandler("/get_config_map", &get_config_map, { Get, Post, Options });
 	//
 	drogon::app().run();
-
 }
 
 void http_quit()
 {
-
-	//if (drogon::app().isRunning())
-		drogon::app().quit();
-
+	drogon::app().disableSession();
+	drogon::app().quit();
 }
