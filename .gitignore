@@ -28,3 +28,5 @@ Debug/line_detection_web
 .settings/org.eclipse.cdt.core.prefs
 
 .cproject
+
+Debug/html/
