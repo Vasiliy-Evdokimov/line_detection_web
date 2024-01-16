@@ -1,10 +1,10 @@
-#include <signal.h>
-#include <unistd.h>
+#include <iostream>
 
 #include <thread>
 #include <pthread.h>
 
 #include "log.hpp"
+#include "config_path.hpp"
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"
 
@@ -12,7 +12,8 @@
 
 pthread_t p_http_thread;
 
-void* p_http_init(void *args) {
+void* p_http_init(void *args)
+{
 	http_init();
 	return 0;
 }
@@ -67,6 +68,9 @@ void onDestroy()
 
 int main(int argc, char** argv)
 {
+	log_filename = get_logs_directory() + "line_detection_web.log";
+	std::cout << "log_filename = " << log_filename << std::endl;
+	//
 	ServiceHandlers srvh {
 		onLoadConfig,
 		onStart,
