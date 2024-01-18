@@ -54,6 +54,8 @@ void get_params(const HttpRequestPtr& request, Callback&& callback)
 {
 	write_log("get_params request!");
 	//
+	init_shared_memory();
+	//
 	Json::Value ret;
 	ConfigData buf = *config_sm_ptr;
 	//
@@ -193,8 +195,18 @@ void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 	callback(resp);
 }
 
+void sigFunc(int sign)
+{
+	(void)sign;
+	drogon::app().quit();
+}
+
 void http_init()
 {
+	signal(SIGINT, sigFunc);
+	signal(SIGTERM, sigFunc);
+	signal(SIGSTOP, sigFunc);
+	//
 	string html_document_root = get_work_directory() + "html";
 	//
 	write_log("html_document_root = " + html_document_root);
@@ -211,11 +223,6 @@ void http_init()
 	drogon::app().registerHandler("/get_points", &get_points, { Get, Post, Options });
 	drogon::app().registerHandler("/get_config_map", &get_config_map, { Get, Post, Options });
 	//
+	drogon::app().enableRunAsDaemon();
 	drogon::app().run();
-}
-
-void http_quit()
-{
-	drogon::app().disableSession();
-	drogon::app().quit();
 }
