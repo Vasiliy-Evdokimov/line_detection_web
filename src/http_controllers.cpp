@@ -4,7 +4,6 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "defines.hpp"
 #include "common_types.hpp"
 #include "config.hpp"
 #include "config_path.hpp"
@@ -195,23 +194,12 @@ void get_config_map(const HttpRequestPtr &request, Callback &&callback)
 	callback(resp);
 }
 
-void sigFunc(int sign)
-{
-	(void)sign;
-	drogon::app().quit();
-}
-
 void http_init()
 {
-	signal(SIGINT, sigFunc);
-	signal(SIGTERM, sigFunc);
-	signal(SIGSTOP, sigFunc);
-	//
 	string html_document_root = get_work_directory() + "html";
-	//
 	write_log("html_document_root = " + html_document_root);
 	//
-	drogon::app().setLogLevel(trantor::Logger::LogLevel::kFatal);
+	drogon::app().setLogLevel(trantor::Logger::LogLevel::kDebug);
 	drogon::app().setThreadNum(1);
 	drogon::app().enableServerHeader(false);
 	drogon::app().setDocumentRoot(html_document_root);
@@ -223,6 +211,5 @@ void http_init()
 	drogon::app().registerHandler("/get_points", &get_points, { Get, Post, Options });
 	drogon::app().registerHandler("/get_config_map", &get_config_map, { Get, Post, Options });
 	//
-	drogon::app().enableRunAsDaemon();
 	drogon::app().run();
 }
