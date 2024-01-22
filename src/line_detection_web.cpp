@@ -67,7 +67,9 @@ void onDestroy()
 
 int main(int argc, char** argv)
 {
-	log_filename = get_logs_directory() + "line_detection_web.log";
+	log_filename =
+		get_logs_directory() + "line_detection_web_" +
+		GetCurrentTime("%Y-%m-%d-%H-%M-%S") + ".log";
 	std::cout << "log_filename = " << log_filename << std::endl;
 	//
 	ServiceHandlers srvh {
