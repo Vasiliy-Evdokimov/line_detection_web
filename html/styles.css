@@ -29,7 +29,7 @@ td
 }
 
 .param_info {
-    width: 300px;
+    width: 600px;
     text-align: right;
 }
 
@@ -47,7 +47,7 @@ input[type="checkbox"]
 .CAM_ADDR_1, 
 .CAM_ADDR_2 
 {
-    width: 500px !important;
+    width: 600px !important;
 }
 
 .UDP_REQUEST
@@ -60,9 +60,16 @@ button
     width: 200px;
 } 
 
+.buttons
+{
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
 .status
 {
     margin-top: 10px;
+    margin-left: 20px;
 }
 
 .status_ok_class 
