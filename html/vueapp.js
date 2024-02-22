@@ -13,7 +13,11 @@ var app = new Vue({
         draw_context: null,
         draw_interval: null,
         //
+        debug_canvas: null,
+        debug_context: null,
+        //
         web_show_lines: false,
+        web_show_debug: false,
         web_interval: 100,
         //
         params_descriptions: new Map()
@@ -101,6 +105,7 @@ var app = new Vue({
         },
         check_params: function() {
             this.web_show_lines = (this.get_param_by_name(this.cur_params, "WEB_SHOW_LINES") > 0);
+            this.web_show_debug = (this.get_param_by_name(this.cur_params, "WEB_DEBUG") > 0);
             this.web_interval = parseInt(this.get_param_by_name(this.cur_params, "WEB_INTERVAL"));
             //
             if (this.draw_interval) 
@@ -168,8 +173,16 @@ var app = new Vue({
                 (this.draw_canvas.height != canvas_height)) 
             {
                 this.draw_canvas.width = canvas_width;
-                this.draw_canvas.height = canvas_height;
+                this.draw_canvas.height = canvas_height;           
             }
+            //
+            if (this.web_show_debug > 0)
+                if ((this.debug_canvas.width != canvas_width) ||
+                    (this.debug_canvas.height != canvas_height)) 
+                {
+                    this.debug_canvas.width = canvas_width;
+                    this.debug_canvas.height = canvas_height;           
+                }
             //
             let offset = 0;
             for (let i = 0; i < 2; i++) {                
@@ -270,15 +283,17 @@ var app = new Vue({
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
                 }                    
                 //
-                if (data.debug[i]) {
+                if (this.web_show_debug > 0)
+                if (data.debug[i]) 
+                {
                     let dbg = data.debug[i];
                     //
-                    let roi = this.get_config_value("NUM_ROI");
+                    let roi = this.get_param_by_name(this.cur_params, "NUM_ROI");
                     let roi_offset = height / roi;
                     ctx.strokeStyle = "yellow";
                     ctx.lineWidth = 1;
                     ctx.beginPath();
-                    //
+                    //  
                     for (let j = 1; j < roi; j++) {
                         let y = roi_offset * j;
                         ctx.moveTo(offset, y);                                 
@@ -315,22 +330,43 @@ var app = new Vue({
                         this.draw_point_arc({ "x": cntr.center.x + offset, "y": cntr.center.y }, clr);
                         //
                         this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 12, "lime", "L=" + cntr.length); 
-                        this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 25, "lime", "W=" + cntr.width); 
+                        this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 25, "lime", "W=" + cntr.width);                        
+                    }
+                    //
+                    let img = dbg.image;
+                    //
+                    let dctx = this.debug_context;
+                    let j = 0;
+                    let hex = "";
+                    let row = 0, col = 0;
+                    dctx.lineWidth = 1;
+                    while (j < img.length)
+                    {
+                        let dec = parseInt(img.substring(j, j + 2), 16);             
+                        //
+                        dctx.strokeStyle = (dec & 1) ? "white" : "black";
+                        //
+                        dctx.beginPath();
+                        //
+                        dctx.moveTo(col + offset, row);
+                        col += (dec >> 1);                                
+                        dctx.lineTo(col + offset, row);                        
+                        dctx.closePath();
+                        dctx.stroke();
+                        //
+                        if (col >= width - 1) {
+                            col = 0;
+                            row++;
+                        }
+                        //
+                        j += 2;
                     }
                 }
                 //
                 offset = width;
 
             }            
-        },
-        get_config_value: function(aKey) {
-            let cp = this.cur_params;
-            for (var key in cp) {
-                let k = key.substring(3);
-                if (k == aKey)
-                    return cp[key];
-            }
-        },        
+        },      
         draw_point_arc: function(aPoint, aColor) {            
             let ctx = this.draw_context;
             ctx.strokeStyle = aColor;
@@ -435,7 +471,10 @@ var app = new Vue({
         this.get_config_map();
         this.get_params();
         //
-        this.draw_canvas = document.getElementById("graph");
-        this.draw_context =  this.draw_canvas.getContext("2d");      
+        this.draw_canvas = document.getElementById("result_canvas");
+        this.draw_context =  this.draw_canvas.getContext("2d");
+        //
+        this.debug_canvas = document.getElementById("debug_canvas");
+        this.debug_context =  this.debug_canvas.getContext("2d");
     }
 });

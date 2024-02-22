@@ -8,7 +8,12 @@
 </head>
 <body>
     <div id="app">
-        <canvas id="graph" v-show="web_show_lines"></canvas>
+        <div v-show="web_show_lines">
+            <canvas id="result_canvas"></canvas>
+        </div>
+        <div v-show="web_show_debug">    
+            <canvas id="debug_canvas"></canvas>
+        </div>
         <div
             class="param"
             v-if="params_init" 
