@@ -124,9 +124,10 @@ void save_params(const HttpRequestPtr &request, Callback &&callback)
 	callback(resp);
 }
 
-void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
+void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result, int index)
 {
 	aJS.clear();
+	aJS["camera_no"] = index + 1;
 	aJS["width"] = parse_result.img_width;
 	aJS["height"] = parse_result.img_height;
 	aJS["error_flags"] = parse_result.error_flags;
@@ -154,17 +155,71 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result)
 	aJS["stop_distance"] = parse_result.stop_distance;
 }
 
+std::string hex_str(const uchar *data, int size)
+{
+     std::stringstream ss;
+     ss << std::hex;
+     for (int i = 0; i < size; ++i)
+         ss << std::setw(2) << std::setfill('0') << (int)data[i];
+     return ss.str();
+}
+
+void fillParseDebugJson(Json::Value& aJS, DebugFixed& parse_debug, int index)
+{
+	aJS.clear();
+	aJS["camera_no"] = index + 1;
+	//
+	aJS["contours_size"] = parse_debug.contours_size;
+	//
+	Json::Value contour, pt;
+	for (int16_t i = 0; i < parse_debug.contours_size; i++)
+	{
+		DebugContourInfo dci = parse_debug.contours[i];
+		//
+		contour["type"] = dci.type;
+		//
+		pt["x"] = dci.center.x;
+		pt["y"] = dci.center.y;
+		contour["center"] = pt;
+		//
+		pt["x"] = dci.left_top.x;
+		pt["y"] = dci.left_top.y;
+		contour["left_top"] = pt;
+		//
+		contour["width"] = dci.width;
+		contour["height"] = dci.height;
+		contour["length"] = dci.length;
+		//
+		aJS["contours"].append(contour);
+	}
+	//
+	aJS["image_size"] = parse_debug.image_size;
+	//
+	aJS["image"] = hex_str(parse_debug.image, parse_debug.image_size);
+}
+
 void get_points(const HttpRequestPtr &request, Callback &&callback)
 {
 	//write_log("get_points request!");
 	//
 	Json::Value root;
-	Json::Value child;
+	Json::Value result;
+	//
 	ResultFixed rfx;
-	for (int i = 0; i < CAM_COUNT; i++) {
+	DebugFixed dfx;
+	//
+	for (int i = 0; i < CAM_COUNT; i++)
+	{
 		read_results_sm(rfx, i);
-		fillParseResultJson(child, rfx);
-		root["result"].append(child);
+		fillParseResultJson(result, rfx, i);
+		root["result"].append(result);
+		//
+		if (config.WEB_DEBUG)
+		{
+			read_debug_sm(dfx, i);
+			fillParseDebugJson(result, dfx, i);
+			root["debug"].append(result);
+		}
 	}
 	//
 	HttpResponsePtr resp = HttpResponse::newHttpResponse();

@@ -8,6 +8,7 @@
 #include "shared_memory.hpp"
 #include "http_controllers.hpp"
 
+#include "defines.hpp"
 #include "service.hpp"
 
 pthread_t p_http_thread;
@@ -29,7 +30,11 @@ void init()
 	write_log("config_sm_id = " + to_string(config_sm_id));
 	write_log("config_sm_ptr->PID = " + to_string(config_sm_ptr->PID));
 	//
+#ifdef SERVICE
 	pthread_create(&p_http_thread, NULL, p_http_init, NULL);
+#else
+	http_init();
+#endif
 }
 
 void quit()
@@ -72,6 +77,7 @@ int main(int argc, char** argv)
 		GetCurrentTime("%Y-%m-%d-%H-%M-%S") + ".log";
 	std::cout << "log_filename = " << log_filename << std::endl;
 	//
+#ifdef SERVICE
 	ServiceHandlers srvh {
 		onLoadConfig,
 		onStart,
@@ -81,4 +87,7 @@ int main(int argc, char** argv)
 	//
 	LDService srv("line_detection_web", srvh);
 	service_main(argc, argv, &srv);
+#else
+	init();
+#endif
 }

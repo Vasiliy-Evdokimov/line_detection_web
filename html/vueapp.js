@@ -187,6 +187,8 @@ var app = new Vue({
                 ctx.stroke();
                 ctx.strokeStyle = "black";
                 //
+                this.draw_point_text(10 + offset, 20, "lime", "Camera " + res.camera_no);  
+                //
                 if (res.error_flags > 0) {
                     if ((res.error_flags & 1) > 0) {    //  fl_err_line
                         this.draw_flag_arc(50 + offset, "red");
@@ -202,8 +204,7 @@ var app = new Vue({
                     if (res.res_points) 
                     {
                         prev_pt = { x: (width / 2) + offset, y: height };
-                        var j;
-                        for (j = 0; j < res.res_points.length; j++) 
+                        for (let j = 0; j < res.res_points.length; j++) 
                         {
                             res_point = res.res_points[j];                        
                             //
@@ -237,8 +238,7 @@ var app = new Vue({
                     //
                     if (res.hor_ys) 
                     {                        
-                        var j;
-                        for (j = 0; j < res.hor_ys.length; j++) 
+                        for (let j = 0; j < res.hor_ys.length; j++) 
                         {
                             hor_y = res.hor_ys[j];                            
                             //                            
@@ -270,10 +270,67 @@ var app = new Vue({
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
                 }                    
                 //
+                if (data.debug[i]) {
+                    let dbg = data.debug[i];
+                    //
+                    let roi = this.get_config_value("NUM_ROI");
+                    let roi_offset = height / roi;
+                    ctx.strokeStyle = "yellow";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    //
+                    for (let j = 1; j < roi; j++) {
+                        let y = roi_offset * j;
+                        ctx.moveTo(offset, y);                                 
+                        ctx.lineTo(offset + width, y);                        
+                    }
+                    //
+                    let x = width / 2 + offset;
+                    ctx.moveTo(x, 0);                                 
+                    ctx.lineTo(x, height);
+                    //
+                    ctx.closePath();
+                    ctx.stroke();
+                    //
+                    for (let j = 0; j < dbg.contours.length; j++) {
+                        var cntr = dbg.contours[j];
+                        //
+                        var clr = "blue";
+                        switch (cntr.type) {
+                            case 2:
+                                clr = "yellow";
+                                break;
+                            case 3:
+                                clr = "red";
+                                break;
+                        }
+                        //
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = clr;
+                        ctx.beginPath();
+                        ctx.rect(cntr.left_top.x + offset, cntr.left_top.y, cntr.width, cntr.height);
+                        ctx.closePath();
+                        ctx.stroke();
+                        //
+                        this.draw_point_arc({ "x": cntr.center.x + offset, "y": cntr.center.y }, clr);
+                        //
+                        this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 12, "lime", "L=" + cntr.length); 
+                        this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 25, "lime", "W=" + cntr.width); 
+                    }
+                }
+                //
                 offset = width;
 
             }            
         },
+        get_config_value: function(aKey) {
+            let cp = this.cur_params;
+            for (var key in cp) {
+                let k = key.substring(3);
+                if (k == aKey)
+                    return cp[key];
+            }
+        },        
         draw_point_arc: function(aPoint, aColor) {            
             let ctx = this.draw_context;
             ctx.strokeStyle = aColor;
