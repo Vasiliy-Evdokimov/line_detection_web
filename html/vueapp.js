@@ -185,7 +185,7 @@ var app = new Vue({
                 }
             //
             let offset = 0;
-            for (let i = 0; i < 2; i++) {                
+            for (let i = 0; i < data.result.length; i++) {                
 
                 let res = data.result[i];
                 let width = res.width;
@@ -283,8 +283,7 @@ var app = new Vue({
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
                 }                    
                 //
-                if (this.web_show_debug > 0)
-                if (data.debug[i]) 
+                if ((this.web_show_debug > 0) && data.debug)
                 {
                     let dbg = data.debug[i];
                     //
