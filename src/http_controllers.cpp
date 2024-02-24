@@ -77,10 +77,10 @@ void apply_params(const HttpRequestPtr &request, Callback &&callback)
 	if(jsonParse(request->body(), v, err)) {
 		try {
 			read_config_sm(buf);
-			//
 			fill_config_form_json(v, buf);
-			//
 			write_config_sm(buf);
+			//
+			config = buf;
 		} catch (...) {
 			err = "apply params failed!";
 			write_log(err);
