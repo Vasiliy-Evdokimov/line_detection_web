@@ -153,6 +153,9 @@ void fillParseResultJson(Json::Value& aJS, ResultFixed& parse_result, int index)
 	//
 	aJS["zone_flags"] = parse_result.zone_flags;
 	aJS["stop_distance"] = parse_result.stop_distance;
+	//
+	aJS["pult_flags"] = parse_result.pult_flags;
+	aJS["hidro_height"] = parse_result.hidro_height;
 }
 
 std::string hex_str(const uchar *data, int size)

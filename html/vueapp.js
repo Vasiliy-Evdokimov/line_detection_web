@@ -159,13 +159,27 @@ var app = new Vue({
             let cnt = { x: imgW / 2, y: imgH / 2 };
             return { x: pt.x + cnt.x, y: cnt.y - pt.y };
         },
-        get_points_callback: function(data) {
+        get_points_callback: function(data)
+        {
             let ctx = this.draw_context;
             //
-            let w0 = data.result[0].width;
-            let h0 = data.result[0].height;
-            let w1 = data.result[1].width;            
-            let h1 = data.result[1].height;
+            var w0 = 0, h0 = 0;
+            var w1 = 0, h1 = 0;
+            //
+            if (data.result) 
+            {
+                if (data.result[0]) 
+                {
+                    w0 = data.result[0].width;
+                    h0 = data.result[0].height;
+                }
+                //
+                if (data.result[1]) 
+                {
+                    w1 = data.result[1].width;
+                    h1 = data.result[1].height;
+                }
+            }
             //
             let canvas_width = w0 + w1;
             let canvas_height = Math.max(h0, h1);
@@ -281,7 +295,26 @@ var app = new Vue({
                     ctx.strokeStyle = ctx.fillStyle;
                     ctx.font = "italic 30pt Arial";
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
-                }                    
+                }    
+                //
+                ctx.fillStyle = "magenta";
+                ctx.strokeStyle = ctx.fillStyle;
+                ctx.font = "15pt Arial";
+                ctx.fillText("hidro_height = " + res.hidro_height, 325 + offset, 20); 
+                //
+                let threshold_thresh = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_THRESH"));
+                let threshold_height_k = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_HEIGHT_K"));
+                threshold_height_k /= 100;                
+                ctx.fillText("threshold  = " + Number(threshold_thresh + res.hidro_height * threshold_height_k),                    
+                    325 + offset, 40);
+                //
+                if ((res.pult_flags & 1) > 0) 
+                {
+                    ctx.fillStyle = "yellow";
+                    ctx.strokeStyle = ctx.fillStyle;
+                    ctx.font = "bold 15pt Arial";
+                    ctx.fillText("AUTO", 575 + offset, 20); 
+                }
                 //
                 if ((this.web_show_debug > 0) && data.debug)
                 {
@@ -306,6 +339,7 @@ var app = new Vue({
                     ctx.closePath();
                     ctx.stroke();
                     //
+                    if (dbg.contours)
                     for (let j = 0; j < dbg.contours.length; j++) {
                         var cntr = dbg.contours[j];
                         //
@@ -339,6 +373,7 @@ var app = new Vue({
                     let hex = "";
                     let row = 0, col = 0;
                     dctx.lineWidth = 1;
+                    if (img)
                     while (j < img.length)
                     {
                         let dec = parseInt(img.substring(j, j + 2), 16);             
