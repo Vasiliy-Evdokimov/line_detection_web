@@ -196,9 +196,14 @@ void fillParseDebugJson(Json::Value& aJS, DebugFixed& parse_debug, int index)
 		aJS["contours"].append(contour);
 	}
 	//
-	aJS["image_size"] = parse_debug.image_size;
+	aJS["image_size"] = 0;
+	aJS["image"] = "";
 	//
-	aJS["image"] = hex_str(parse_debug.image, parse_debug.image_size);
+	if (config.WEB_SHOW_IMAGE)
+	{
+		aJS["image_size"] = parse_debug.image_size;
+		aJS["image"] = hex_str(parse_debug.image, parse_debug.image_size);
+	}
 }
 
 void get_points(const HttpRequestPtr &request, Callback &&callback)
@@ -217,7 +222,7 @@ void get_points(const HttpRequestPtr &request, Callback &&callback)
 		fillParseResultJson(result, rfx, i);
 		root["result"].append(result);
 		//
-		if (config.WEB_DEBUG)
+		if (config.WEB_SHOW_DEBUG || config.WEB_SHOW_IMAGE)
 		{
 			read_debug_sm(dfx, i);
 			fillParseDebugJson(result, dfx, i);

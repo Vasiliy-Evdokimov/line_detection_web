@@ -18,7 +18,14 @@ var app = new Vue({
         //
         web_show_lines: false,
         web_show_debug: false,
+        web_show_image: false,
         web_interval: 100,
+        //
+        use_image_roi: false,
+        image_roi_x: 0,
+        image_roi_y: 0,
+        image_roi_w: 0,
+        image_roi_h: 0,        
         //
         params_descriptions: new Map()
     },
@@ -103,9 +110,17 @@ var app = new Vue({
                 this.params_descriptions.set(item.name,
                     { "type": item.type, "descr": item.descr });
         },
-        check_params: function() {
+        check_params: function()
+        {
+            this.use_image_roi = (this.get_param_by_name(this.cur_params, "USE_IMAGE_ROI") > 0);
+            this.image_roi_x = (this.get_param_by_name(this.cur_params, "IMAGE_ROI_X"));
+            this.image_roi_y = (this.get_param_by_name(this.cur_params, "IMAGE_ROI_Y"));
+            this.image_roi_w = (this.get_param_by_name(this.cur_params, "IMAGE_ROI_W"));
+            this.image_roi_h = (this.get_param_by_name(this.cur_params, "IMAGE_ROI_H"));                                    
+            //
             this.web_show_lines = (this.get_param_by_name(this.cur_params, "WEB_SHOW_LINES") > 0);
-            this.web_show_debug = (this.get_param_by_name(this.cur_params, "WEB_DEBUG") > 0);
+            this.web_show_debug = (this.get_param_by_name(this.cur_params, "WEB_SHOW_DEBUG") > 0);
+            this.web_show_image = (this.get_param_by_name(this.cur_params, "WEB_SHOW_IMAGE") > 0);
             this.web_interval = parseInt(this.get_param_by_name(this.cur_params, "WEB_INTERVAL"));
             //
             if (this.draw_interval) 
@@ -190,7 +205,7 @@ var app = new Vue({
                 this.draw_canvas.height = canvas_height;           
             }
             //
-            if (this.web_show_debug > 0)
+            if (this.web_show_image > 0)
                 if ((this.debug_canvas.width != canvas_width) ||
                     (this.debug_canvas.height != canvas_height)) 
                 {
@@ -356,6 +371,22 @@ var app = new Vue({
                     ctx.closePath();
                     ctx.stroke();
                     //
+                    if (this.use_image_roi)
+                    {
+                        //
+                        ctx.lineWidth = 1;
+                        ctx.strokeStyle = "cyan";
+                        ctx.beginPath();
+                        ctx.rect(
+                            this.image_roi_x + offset,
+                            this.image_roi_y,
+                            this.image_roi_w,
+                            this.image_roi_h
+                        );
+                        ctx.closePath();
+                        ctx.stroke();
+                    }
+                    //
                     if (dbg.contours)
                     for (let j = 0; j < dbg.contours.length; j++) {
                         var cntr = dbg.contours[j];
@@ -382,8 +413,11 @@ var app = new Vue({
                         this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 12, "lime", "L=" + cntr.length); 
                         this.draw_point_text(cntr.left_top.x + offset + 2, cntr.left_top.y + 25, "lime", "W=" + cntr.width);                        
                     }
-                    //
-                    let img = dbg.image;
+                }
+                //
+                if ((this.web_show_image > 0) && data.debug)
+                {
+                    let img = data.debug[i].image;
                     //
                     let dctx = this.debug_context;
                     let j = 0;
