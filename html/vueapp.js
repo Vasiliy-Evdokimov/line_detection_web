@@ -255,7 +255,8 @@ var app = new Vue({
                         }                         
                     }     
                     //
-                    if (res.center_x) {
+                    if (res.center_x != undefined)
+                    {
                         draw_pt = this.topleft(width, height, { x: res.center_x, y: 0 });
                         draw_pt.x += offset;
                         this.draw_point_arc(draw_pt, "magenta");
@@ -305,7 +306,7 @@ var app = new Vue({
                 let threshold_thresh = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_THRESH"));
                 let threshold_height_k = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_HEIGHT_K"));
                 threshold_height_k /= 100;                
-                ctx.fillText("threshold  = " + Number(threshold_thresh + res.hidro_height * threshold_height_k),                    
+                ctx.fillText("threshold  = " + Math.round(threshold_thresh + res.hidro_height * threshold_height_k),                    
                     325 + offset, 40);
                 //
                 if ((res.pult_flags & 1) > 0) 
@@ -313,7 +314,10 @@ var app = new Vue({
                     ctx.fillStyle = "yellow";
                     ctx.strokeStyle = ctx.fillStyle;
                     ctx.font = "bold 15pt Arial";
-                    ctx.fillText("AUTO", 575 + offset, 20); 
+                    if (this.get_param_by_name(this.cur_params, "AUTO_EMULATE") == 1)
+                        ctx.fillText("AUTO(E)", 550 + offset, 20);
+                    else
+                        ctx.fillText("AUTO", 575 + offset, 20);
                 }
                 //
                 if ((this.web_show_debug > 0) && data.debug)
