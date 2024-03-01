@@ -298,16 +298,19 @@ var app = new Vue({
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
                 }    
                 //
-                ctx.fillStyle = "magenta";
-                ctx.strokeStyle = ctx.fillStyle;
-                ctx.font = "15pt Arial";
-                ctx.fillText("hidro_height = " + res.hidro_height, 325 + offset, 20); 
-                //
-                let threshold_thresh = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_THRESH"));
-                let threshold_height_k = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_HEIGHT_K"));
-                threshold_height_k /= 100;                
-                ctx.fillText("threshold  = " + Math.round(threshold_thresh + res.hidro_height * threshold_height_k),                    
-                    325 + offset, 40);
+                if (this.web_show_debug > 0)
+                {
+                    ctx.fillStyle = "magenta";
+                    ctx.strokeStyle = ctx.fillStyle;
+                    ctx.font = "15pt Arial";
+                    ctx.fillText("hidro_height = " + res.hidro_height, 325 + offset, 20); 
+                    //
+                    let threshold_thresh = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_THRESH"));
+                    let threshold_height_k = Number(this.get_param_by_name(this.cur_params, "THRESHOLD_HEIGHT_K"));
+                    threshold_height_k /= 100;                
+                    ctx.fillText("threshold  = " + Math.round(threshold_thresh + res.hidro_height * threshold_height_k),                    
+                        325 + offset, 40);
+                }        
                 //
                 if ((res.pult_flags & 1) > 0) 
                 {
@@ -328,18 +331,28 @@ var app = new Vue({
                     let roi_offset = height / roi;
                     ctx.strokeStyle = "yellow";
                     ctx.lineWidth = 1;
-                    ctx.beginPath();
-                    //  
-                    for (let j = 1; j < roi; j++) {
+                    //                    
+                    for (let j = 1; j < roi; j++)
+                    {
+                        ctx.beginPath();
                         let y = roi_offset * j;
                         ctx.moveTo(offset, y);                                 
-                        ctx.lineTo(offset + width, y);                        
-                    }
+                        ctx.lineTo(offset + width, y); 
+                        ctx.closePath();
+                        ctx.stroke();                       
+                    }                    
                     //
+                    ctx.strokeStyle = "magenta";
+                    ctx.lineWidth = 1;
+                    //
+                    ctx.beginPath();
                     let x = width / 2 + offset;
                     ctx.moveTo(x, 0);                                 
                     ctx.lineTo(x, height);
                     //
+                    let y = height / 2;
+                    ctx.moveTo(0 + offset, y);                                 
+                    ctx.lineTo(width + offset, y);
                     ctx.closePath();
                     ctx.stroke();
                     //
