@@ -205,7 +205,7 @@ var app = new Vue({
                 this.draw_canvas.height = canvas_height;           
             }
             //
-            if (this.web_show_image > 0)
+            if (this.web_show_image)
                 if ((this.debug_canvas.width != canvas_width) ||
                     (this.debug_canvas.height != canvas_height)) 
                 {
@@ -313,7 +313,7 @@ var app = new Vue({
                     ctx.fillText(res.stop_distance, 170 + offset, 50);
                 }    
                 //
-                if (this.web_show_debug > 0)
+                if (this.web_show_debug)
                 {
                     ctx.fillStyle = "magenta";
                     ctx.strokeStyle = ctx.fillStyle;
@@ -338,7 +338,7 @@ var app = new Vue({
                         ctx.fillText("AUTO", 575 + offset, 20);
                 }
                 //
-                if ((this.web_show_debug > 0) && data.debug)
+                if (this.web_show_debug && data.debug)
                 {
                     let dbg = data.debug[i];
                     //
@@ -357,6 +357,7 @@ var app = new Vue({
                         ctx.stroke();                       
                     }                    
                     //
+                    //  center lines
                     ctx.strokeStyle = "magenta";
                     ctx.lineWidth = 1;
                     //
@@ -415,7 +416,7 @@ var app = new Vue({
                     }
                 }
                 //
-                if ((this.web_show_image > 0) && data.debug)
+                if (this.web_show_image && data.debug)
                 {
                     let img = data.debug[i].image;
                     //
@@ -446,6 +447,24 @@ var app = new Vue({
                         //
                         j += 2;
                     }
+                    //
+                    if (this.web_show_debug)
+                    {
+                        //  center lines
+                        dctx.strokeStyle = "magenta";
+                        dctx.lineWidth = 1;
+                        //
+                        dctx.beginPath();
+                        let x = width / 2 + offset;
+                        dctx.moveTo(x, 0);                                 
+                        dctx.lineTo(x, height);
+                        //
+                        let y = height / 2;
+                        dctx.moveTo(0 + offset, y);                                 
+                        dctx.lineTo(width + offset, y);
+                        dctx.closePath();
+                        dctx.stroke();   
+                    }                 
                 }
                 //
                 offset = width;
